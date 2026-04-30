@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SBDStore — Premium Tech Products',
+  title: 'SBDStore | Premium Tech Products',
   description: 'Your one-stop destination for premium technology products',
 };
 
