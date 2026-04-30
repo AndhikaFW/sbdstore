@@ -1,0 +1,1138 @@
+{
+  "info": {
+    "name": "SBD Store API",
+    "description": "Koleksi tes endpoint API SBD Store berdasarkan dokumentasi resmi. Jalankan sesuai urutan folder.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "transaction_id", "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "1. User - Register",
+      "item": [
+        {
+          "name": "[SUCCESS 201] Register user baru",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload memiliki id', () => pm.expect(pm.response.json().payload).to.have.property('id'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/register", "host": ["{{baseUrl}}"], "path": ["user", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1-555-0100\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Email format tidak valid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/register", "host": ["{{baseUrl}}"], "path": ["user", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"johndoe2\",\n  \"email\": \"bukan-email\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Password terlalu lemah (< 10 char, tanpa spesial)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/register", "host": ["{{baseUrl}}"], "path": ["user", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"johndoe3\",\n  \"email\": \"john3@example.com\",\n  \"password\": \"lemah\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Username mengandung karakter tidak valid (spasi/simbol)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/register", "host": ["{{baseUrl}}"], "path": ["user", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"john doe!\",\n  \"email\": \"john4@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Email sudah terdaftar (duplicate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/register", "host": ["{{baseUrl}}"], "path": ["user", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"johndoe_dup\",\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Field wajib kosong (name missing)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/register", "host": ["{{baseUrl}}"], "path": ["user", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"johndoe5\",\n  \"email\": \"john5@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "2. User - Login (tanpa token)",
+      "item": [
+        {
+          "name": "[SUCCESS 200] Login berhasil - kembalikan data user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload memiliki id', () => pm.expect(pm.response.json().payload).to.have.property('id'));",
+                  "pm.test('tidak ada token di payload', () => pm.expect(pm.response.json().payload).to.not.have.property('token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/login", "host": ["{{baseUrl}}"], "path": ["user", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 401] Password salah",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/login", "host": ["{{baseUrl}}"], "path": ["user", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"SalahPassword1!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 401] Email tidak terdaftar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/login", "host": ["{{baseUrl}}"], "path": ["user", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tidakada@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "3. Auth - Login (dengan JWT token)",
+      "item": [
+        {
+          "name": "[SUCCESS 200] Login berhasil - kembalikan JWT token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload memiliki token', () => pm.expect(pm.response.json().payload).to.have.property('token'));",
+                  "pm.test('payload memiliki user', () => pm.expect(pm.response.json().payload).to.have.property('user'));",
+                  "const token = pm.response.json().payload.token;",
+                  "pm.collectionVariables.set('token', token);",
+                  "pm.test('token tersimpan di variable', () => pm.expect(token).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 401] Password salah",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"WrongPass999!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 401] Email tidak terdaftar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tidakada@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 429] Rate limit - kirim >5x dalam 15 menit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 429 (rate limit) atau 401 (belum limit)', () => {",
+                  "  pm.expect([401, 429]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rate@limit.test\",\n  \"password\": \"TriggerLimit1!\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "4. User - Update Profile",
+      "item": [
+        {
+          "name": "[SUCCESS 200] Update profil dengan token valid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('name terupdate', () => pm.expect(pm.response.json().payload.name).to.eql('John Updated'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/user/update", "host": ["{{baseUrl}}"], "path": ["user", "update"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Updated\",\n  \"username\": \"johnupdated\",\n  \"email\": \"john.updated@example.com\",\n  \"phone\": \"+1-555-0101\",\n  \"password\": \"NewSecurePass456!\",\n  \"balance\": 5000000\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 401] Tanpa token Authorization",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/user/update", "host": ["{{baseUrl}}"], "path": ["user", "update"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hacker\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 401] Token tidak valid / palsu",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer tokenpalsubanget123" }
+            ],
+            "url": { "raw": "{{baseUrl}}/user/update", "host": ["{{baseUrl}}"], "path": ["user", "update"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hacker\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Format email tidak valid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/user/update", "host": ["{{baseUrl}}"], "path": ["user", "update"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"bukan-email\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Password tidak memenuhi syarat regex",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/user/update", "host": ["{{baseUrl}}"], "path": ["user", "update"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"lemah\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "5. User - History & Total Spent",
+      "item": [
+        {
+          "name": "[SUCCESS 200] GET /user/history - riwayat transaksi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload adalah array', () => pm.expect(pm.response.json().payload).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/user/history", "host": ["{{baseUrl}}"], "path": ["user", "history"] }
+          }
+        },
+        {
+          "name": "[FAILED 401] GET /user/history - tanpa token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/user/history", "host": ["{{baseUrl}}"], "path": ["user", "history"] }
+          }
+        },
+        {
+          "name": "[SUCCESS 200] GET /user/total-spent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload memiliki total_spent', () => pm.expect(pm.response.json().payload).to.have.property('total_spent'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/user/total-spent", "host": ["{{baseUrl}}"], "path": ["user", "total-spent"] }
+          }
+        },
+        {
+          "name": "[FAILED 401] GET /user/total-spent - tanpa token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/user/total-spent", "host": ["{{baseUrl}}"], "path": ["user", "total-spent"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "6. Item",
+      "item": [
+        {
+          "name": "[SUCCESS 200] GET /items - semua item (publik)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload adalah array', () => pm.expect(pm.response.json().payload).to.be.an('array'));",
+                  "pm.test('item memiliki field name & price', () => {",
+                  "  const item = pm.response.json().payload[0];",
+                  "  pm.expect(item).to.have.property('name');",
+                  "  pm.expect(item).to.have.property('price');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/items", "host": ["{{baseUrl}}"], "path": ["items"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "7. Transaction - Create",
+      "item": [
+        {
+          "name": "[SUCCESS 201] Buat transaksi baru",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('status pending', () => pm.expect(pm.response.json().payload.status).to.eql('pending'));",
+                  "const tid = pm.response.json().payload.id;",
+                  "pm.collectionVariables.set('transaction_id', tid);",
+                  "pm.test('transaction_id tersimpan', () => pm.expect(tid).to.be.a('number'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/transaction/create", "host": ["{{baseUrl}}"], "path": ["transaction", "create"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"item_id\": 2,\n  \"quantity\": 3,\n  \"description\": \"Beli mouse untuk kerja\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 401] Tanpa token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/transaction/create", "host": ["{{baseUrl}}"], "path": ["transaction", "create"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"item_id\": 2,\n  \"quantity\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 404] Item tidak ditemukan (item_id tidak ada)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/transaction/create", "host": ["{{baseUrl}}"], "path": ["transaction", "create"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"item_id\": 9999,\n  \"quantity\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Quantity negatif / tidak valid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/transaction/create", "host": ["{{baseUrl}}"], "path": ["transaction", "create"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"item_id\": 2,\n  \"quantity\": -5\n}"
+            }
+          }
+        },
+        {
+          "name": "[FAILED 400] Stok tidak mencukupi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/transaction/create", "host": ["{{baseUrl}}"], "path": ["transaction", "create"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"item_id\": 2,\n  \"quantity\": 999999\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "8. Transaction - Get by ID",
+      "item": [
+        {
+          "name": "[SUCCESS 200] GET /transaction/:id - detail transaksi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload memiliki id', () => pm.expect(pm.response.json().payload).to.have.property('id'));",
+                  "pm.test('payload memiliki status', () => pm.expect(pm.response.json().payload).to.have.property('status'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/{{transaction_id}}", "host": ["{{baseUrl}}"], "path": ["transaction", "{{transaction_id}}"] }
+          }
+        },
+        {
+          "name": "[FAILED 401] Tanpa token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/transaction/1", "host": ["{{baseUrl}}"], "path": ["transaction", "1"] }
+          }
+        },
+        {
+          "name": "[FAILED 404] Transaksi tidak ditemukan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/9999", "host": ["{{baseUrl}}"], "path": ["transaction", "9999"] }
+          }
+        },
+        {
+          "name": "[FAILED 400] ID bukan integer (format tidak valid)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/abc", "host": ["{{baseUrl}}"], "path": ["transaction", "abc"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "9. Transaction - Pay (atomik)",
+      "item": [
+        {
+          "name": "[SUCCESS 200] Bayar transaksi - saldo cukup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('status paid', () => pm.expect(pm.response.json().payload.status).to.eql('paid'));",
+                  "pm.test('ada new_balance', () => pm.expect(pm.response.json().payload).to.have.property('new_balance'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/pay/{{transaction_id}}", "host": ["{{baseUrl}}"], "path": ["transaction", "pay", "{{transaction_id}}"] }
+          }
+        },
+        {
+          "name": "[FAILED 400] Transaksi sudah paid (bayar ulang)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/pay/{{transaction_id}}", "host": ["{{baseUrl}}"], "path": ["transaction", "pay", "{{transaction_id}}"] }
+          }
+        },
+        {
+          "name": "[FAILED 400] Saldo tidak mencukupi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);",
+                  "pm.test('pesan saldo tidak cukup', () => pm.expect(pm.response.json().message.toLowerCase()).to.include('insufficient'));"
+                ]
+              }
+            }
+          ],
+          "description": "Buat dulu user baru dengan saldo 0, login, buat transaksi mahal, lalu coba bayar.",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/pay/1", "host": ["{{baseUrl}}"], "path": ["transaction", "pay", "1"] }
+          }
+        },
+        {
+          "name": "[FAILED 401] Tanpa token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/transaction/pay/1", "host": ["{{baseUrl}}"], "path": ["transaction", "pay", "1"] }
+          }
+        },
+        {
+          "name": "[FAILED 404] Transaksi tidak ditemukan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 atau 404', () => pm.expect([400, 404]).to.include(pm.response.code));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/pay/9999", "host": ["{{baseUrl}}"], "path": ["transaction", "pay", "9999"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "10. Transaction - Delete",
+      "item": [
+        {
+          "name": "[SUCCESS 200] Hapus transaksi",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Pastikan ada transaksi baru untuk dihapus, gunakan transaction_id dari variable"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload null', () => pm.expect(pm.response.json().payload).to.be.null);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/{{transaction_id}}", "host": ["{{baseUrl}}"], "path": ["transaction", "{{transaction_id}}"] }
+          }
+        },
+        {
+          "name": "[FAILED 401] Tanpa token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/transaction/1", "host": ["{{baseUrl}}"], "path": ["transaction", "1"] }
+          }
+        },
+        {
+          "name": "[FAILED 404] Transaksi tidak ditemukan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('success false', () => pm.expect(pm.response.json().success).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/transaction/9999", "host": ["{{baseUrl}}"], "path": ["transaction", "9999"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "11. Reports",
+      "item": [
+        {
+          "name": "[SUCCESS 200] GET /reports/top-users?limit=10",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload adalah array', () => pm.expect(pm.response.json().payload).to.be.an('array'));",
+                  "if (pm.response.json().payload.length > 0) {",
+                  "  pm.test('item memiliki rank', () => pm.expect(pm.response.json().payload[0]).to.have.property('rank'));",
+                  "  pm.test('item memiliki total_spent', () => pm.expect(pm.response.json().payload[0]).to.have.property('total_spent'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/top-users?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "top-users"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "[SUCCESS 200] GET /reports/top-users - default limit (tanpa param)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/reports/top-users", "host": ["{{baseUrl}}"], "path": ["reports", "top-users"] }
+          }
+        },
+        {
+          "name": "[SUCCESS 200] GET /reports/top-users?limit=3 - custom limit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('max 3 hasil', () => pm.expect(pm.response.json().payload.length).to.be.at.most(3));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/top-users?limit=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "top-users"],
+              "query": [{ "key": "limit", "value": "3" }]
+            }
+          }
+        },
+        {
+          "name": "[SUCCESS 200] GET /reports/items-sold",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload adalah array', () => pm.expect(pm.response.json().payload).to.be.an('array'));",
+                  "if (pm.response.json().payload.length > 0) {",
+                  "  pm.test('ada total_quantity_sold', () => pm.expect(pm.response.json().payload[0]).to.have.property('total_quantity_sold'));",
+                  "  pm.test('ada total_revenue', () => pm.expect(pm.response.json().payload[0]).to.have.property('total_revenue'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/reports/items-sold", "host": ["{{baseUrl}}"], "path": ["reports", "items-sold"] }
+          }
+        },
+        {
+          "name": "[SUCCESS 200] GET /reports/monthly-sales?year=2026",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test('payload adalah array', () => pm.expect(pm.response.json().payload).to.be.an('array'));",
+                  "if (pm.response.json().payload.length > 0) {",
+                  "  pm.test('ada month', () => pm.expect(pm.response.json().payload[0]).to.have.property('month'));",
+                  "  pm.test('ada total_revenue', () => pm.expect(pm.response.json().payload[0]).to.have.property('total_revenue'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/monthly-sales?year=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "monthly-sales"],
+              "query": [{ "key": "year", "value": "2026" }]
+            }
+          }
+        },
+        {
+          "name": "[SUCCESS 200] GET /reports/monthly-sales - default tahun",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/reports/monthly-sales", "host": ["{{baseUrl}}"], "path": ["reports", "monthly-sales"] }
+          }
+        }
+      ]
+    }
+
+  ]
+}
